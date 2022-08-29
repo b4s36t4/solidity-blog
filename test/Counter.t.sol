@@ -1,23 +1,30 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.10;
 
 import "forge-std/Test.sol";
-import "../src/Counter.sol";
+import "../src/Blog.sol";
 
-contract CounterTest is Test {
-    Counter public counter;
+contract BlogTest is Test {
+    Blog public blog;
+
+    address internal owner;
+    address internal dev;
+
     function setUp() public {
-       counter = new Counter();
-       counter.setNumber(0);
+        blog = new Blog();
+        console.log("Contact address is: ");
+        emit log_address(address(blog));
+        console.log("Contact Onwer is: ");
+        emit log_address(blog.owner());
     }
 
-    function testIncrement() public {
-        counter.increment();
-        assertEq(counter.number(), 1);
+    function testFailPostcreate() public {
+        vm.prank(dev);
+        vm.expectRevert(abi.encodePacked("Ownable: caller is not the owner"));
+        blog.createPost("https://google.com");
+
+        console.log("Post failed cause msg.sender is not contract onwer");
     }
 
-    function testSetNumber(uint256 x) public {
-        counter.setNumber(x);
-        assertEq(counter.number(), x);
-    }
+    // function testFailOverIndex() public {}
 }
